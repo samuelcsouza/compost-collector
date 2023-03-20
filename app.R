@@ -11,6 +11,7 @@ suppressMessages({
   library(stringr)
   library(pool)
   library(RPostgreSQL)
+  library(nominatimlite)
 })
 
 sapply(
