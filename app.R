@@ -8,6 +8,9 @@ suppressMessages({
   library(htmltools)
   library(DT)
   library(plotly)
+  library(stringr)
+  library(pool)
+  library(RPostgreSQL)
 })
 
 sapply(
@@ -71,5 +74,7 @@ server <- function(input, output, session) {
   callModule(data_server, 'dados')
   
 }
+
+shiny::onStop(close_connection)
 
 shinyApp(ui, server)
