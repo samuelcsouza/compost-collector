@@ -1,0 +1,32 @@
+version: '3.7'
+
+services:
+  database:
+    env_file:
+      - .env
+    image: postgis/postgis
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    restart: always
+    environment:
+      - POSTGRES_USER=${GIS_USER}
+      - POSTGRES_PASSWORD=${GIS_PWD}
+    ports:
+      - 5432:5432
+    container_name: postgres
+  
+  application:
+    container_name: application
+    build:
+      dockerfile: Dockerfile
+      args:
+        - ARG_GIS_USER=${GIS_USER}
+        - ARG_GIS_PWD=${GIS_PWD}
+    restart: unless-stopped
+    expose:
+      - 8080
+    depends_on:
+      - database
+  
+volumes:
+  postgres_data:
