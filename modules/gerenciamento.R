@@ -136,6 +136,7 @@ gerenciamento_server <- function(input, output, session){
     
     input$new_point
     input$edit_point
+    input$delete_point
     
     query <- "
       SELECT
@@ -273,6 +274,36 @@ gerenciamento_server <- function(input, output, session){
       )
     )
 
+  })
+  
+  # # # # Delete # # # #
+  observeEvent(input$delete_point, {
+    
+    id <- shiny::isolate(input$delete_point_id)
+    
+    query <- "
+      DELETE FROM 
+        public.postos_coleta
+      WHERE
+        public.postos_coleta.id_posto = ?id;
+    "
+    
+    query <- pool::sqlInterpolate(con,
+                                  query,
+                                  id = id)
+    
+    pool::dbGetQuery(con, query)
+    
+    clear_text('delete_point_id')
+    
+    showModal(
+      modalDialog(
+        title = 'Sucesso!',
+        size = 's',
+        p('Ponto de coleta excluído com sucesso!')
+      )
+    )
+    
   })
   
 }
