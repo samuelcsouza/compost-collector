@@ -136,4 +136,57 @@ gerenciamento_server <- function(input, output, session){
     head(mtcars, 5)
   })
   
+  # # # # Add # # # #
+  observeEvent(input$new_point, {
+    
+    address <- shiny::isolate(input$point_address) %>% stringr::str_to_title()
+    point_name <- shiny::isolate(input$point_name)
+    
+    coords <- tryCatch(
+      geocode(address),
+      error = function(e){
+        showModal(
+          modalDialog(
+            title = 'Erro!',
+            size = 's',
+            p('Endereço não encontrado! ', address)
+          )
+        )
+        shiny::validate("")
+      }
+    )
+    
+    query <- "
+      INSERT INTO public.postos_coleta(
+        endereco_completo,
+        nome_posto,
+        latitude,
+        longitude
+      ) VALUES (
+        ?address, ?name, ?lat, ?lng
+      );
+    "
+    
+    query <- pool::sqlInterpolate(con, 
+                                  query, 
+                                  address = address, 
+                                  name = point_name,
+                                  lat = coords$lat[1],
+                                  lng = coords$lon[1])
+    
+    pool::dbGetQuery(con, query)
+    
+    clear_text('point_address')
+    clear_text('point_name')
+
+    showModal(
+      modalDialog(
+        title = 'Sucesso!',
+        size = 's',
+        p('Ponto de coleta inserido com sucesso!')
+      )
+    )
+    
+  })
+  
 }
