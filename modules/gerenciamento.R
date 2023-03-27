@@ -117,7 +117,7 @@ gerenciamento_ui <- function(id){
           footer = div(
             align = 'center',
             actionButton(
-              inputId = ns('edit_point'),
+              inputId = ns('delete_point'),
               label = 'Excluir'
             )
           )
@@ -133,6 +133,10 @@ gerenciamento_server <- function(input, output, session){
   ns <- session$ns
   
   output$list_collection_points <- renderDataTable({
+    
+    input$new_point
+    input$edit_point
+    
     query <- "
       SELECT
         id_posto AS Identificador,
@@ -212,6 +216,63 @@ gerenciamento_server <- function(input, output, session){
       )
     )
     
+  })
+  
+  # # # # Edit # # # #
+  observeEvent(input$edit_point, {
+
+    id          <- shiny::isolate(input$edit_point_id)
+    address     <- shiny::isolate(input$edit_point_address) %>% stringr::str_to_title()
+    point_name  <- shiny::isolate(input$edit_point_name)
+    
+    coords <- tryCatch(
+      geocode(address),
+      error = function(e){
+        showModal(
+          modalDialog(
+            title = 'Erro!',
+            size = 's',
+            p('Endereço não encontrado! ', address)
+          )
+        )
+        shiny::validate("")
+      }
+    )
+
+    query <- "
+      UPDATE
+        public.postos_coleta
+      SET
+        endereco_completo = ?address,
+        latitude = ?lat,
+        longitude = ?lng,
+        nome_posto = ?name
+      WHERE
+        public.postos_coleta.id_posto = ?id;
+    "
+
+    query <- pool::sqlInterpolate(con,
+                                  query,
+                                  id = id,
+                                  address = address,
+                                  name = point_name,
+                                  lat = coords$lat[1],
+                                  lng = coords$lon[1])
+
+    pool::dbGetQuery(con, query)
+
+    clear_text('edit_point_address')
+    clear_text('edit_point_name')
+    clear_text('edit_point_id')
+
+    showModal(
+      modalDialog(
+        title = 'Sucesso!',
+        size = 's',
+        p('Ponto de coleta alterado com sucesso!')
+      )
+    )
+
   })
   
 }
