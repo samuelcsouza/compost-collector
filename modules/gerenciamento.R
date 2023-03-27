@@ -133,7 +133,32 @@ gerenciamento_server <- function(input, output, session){
   ns <- session$ns
   
   output$list_collection_points <- renderDataTable({
-    head(mtcars, 5)
+    query <- "
+      SELECT
+        id_posto AS Identificador,
+        nome_posto AS nome,
+        endereco_completo AS endereço
+      FROM
+        public.postos_coleta
+      ORDER BY id_posto ASC
+      LIMIT 5;
+    "
+    
+    dataset <- pool::dbGetQuery(con, query)
+    
+    datatable(
+      dataset,
+      colnames = names(dataset) %>% stringr::str_to_title(),
+      rownames = FALSE,
+      options = list(searching = FALSE,
+                     paging = FALSE,
+                     info = FALSE,
+                     stripeClasses = FALSE,
+                     scrollX = TRUE,
+                     ordering = FALSE,
+                     scrollY = "250px")
+    )
+    
   })
   
   # # # # Add # # # #
