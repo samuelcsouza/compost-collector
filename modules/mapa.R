@@ -159,7 +159,8 @@ map_server <- function(input, output, session){
     from
     	public.compostagens c
     where
-    	c.posto_fk = ?fk;
+      c.foi_recolhido = false
+    	AND c.posto_fk = ?fk;
     "
 
     all_compost_query <- pool::sqlInterpolate(con, all_compost_query, fk = id)
@@ -238,18 +239,20 @@ map_server <- function(input, output, session){
   })
   
   
-  # # # Delete Composts
+  # # # Get Composts
   observeEvent(input$btn_remove, {
     
     .rows <- input$compost_table_rows_selected %>% shiny::isolate()
     
-    rows_to_delete <- all_compost_dataset[.rows, ]
+    rows_to_update <- all_compost_dataset[.rows, ]
     
-    query <- "DELETE FROM public.compostagens c WHERE c.id_compostagem = ?delete_id"
+    query <- "UPDATE public.compostagens 
+      SET foi_recolhido = true, recolhido_em = NOW()
+      WHERE id_compostagem = ?id;"
     
-    lapply(rows_to_delete$id, function(delete_id) {
-      delete_query <- pool::sqlInterpolate(con, query, delete_id = delete_id)
-      pool::dbGetQuery(con, delete_query)
+    lapply(rows_to_update$id, function(id) {
+      update_query <- pool::sqlInterpolate(con, query, id = id)
+      pool::dbGetQuery(con, update_query)
     })
     
     removeModal()
