@@ -19,29 +19,26 @@ gerenciamento_ui <- function(id){
           
           br(),
           
-          div(
-            # align = 'center',
-            
-            column(width = 2),
+          fluidRow(
+            align = 'right',
             
             downloadButton(
               outputId = ns('garbage_download'),
               label = 'Download',
-            ) %>% column(width = 2),
+            ) ,
             
             actionButton(
               inputId = ns('garbage_update'),
               label = 'Atualizar Dados',
               icon = icon('refresh')
-            )%>% column(width = 2),
+            ),
             
             actionButton(
               inputId = ns('garbage_delete'),
               label = 'Limpar Dados',
               icon = icon('broom')
-            )%>% column(width = 2),
+            )
             
-            column(width = 4)
           )
         )
       )
