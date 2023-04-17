@@ -369,6 +369,7 @@ gerenciamento_server <- function(input, output, session){
       	public.compostagens
       where
       	foi_recolhido = true
+      	AND publicado_por <> '_default'
       group by
       	publicado_por;"
       
@@ -403,6 +404,7 @@ gerenciamento_server <- function(input, output, session){
       	public.compostagens
       where
       	foi_recolhido = true
+      	AND publicado_por <> '_default'
       group by
       	publicado_por;"
     

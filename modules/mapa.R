@@ -45,6 +45,8 @@ map_server <- function(input, output, session){
         public.compostagens c
       ON 
         pc.id_posto = c.posto_fk 
+      WHERE
+        c.foi_recolhido = false
       GROUP BY 
         id;"
     
@@ -104,7 +106,9 @@ map_server <- function(input, output, session){
       LEFT JOIN
         public.compostagens c
       ON 
-        pc.id_posto = c.posto_fk 
+        pc.id_posto = c.posto_fk
+      WHERE 
+        c.foi_recolhido = false
       GROUP BY 
         id;"
     
@@ -160,6 +164,7 @@ map_server <- function(input, output, session){
     	public.compostagens c
     where
       c.foi_recolhido = false
+      AND c.publicado_por <> '_default'
     	AND c.posto_fk = ?fk;
     "
 

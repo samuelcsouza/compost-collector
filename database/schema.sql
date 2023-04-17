@@ -24,6 +24,7 @@ CREATE TABLE IF NOT EXISTS public.compostagens(
 	CONSTRAINT compostagem_fk FOREIGN KEY (posto_fk) REFERENCES public.postos_coleta(id_posto) ON DELETE CASCADE
 );
 
+-- Postos de coleta previamente cadastrados
 INSERT INTO
 	public.postos_coleta (
 		endereco_completo,
@@ -56,3 +57,24 @@ VALUES
 		-23.225074596895237,
 		-45.91713138433457
 	);
+
+-- Valores default para não bugar o mapa
+INSERT INTO
+	public.compostagens(quantidade_kg, publicado_por, posto_fk)
+VALUES
+	(0, '_default', 1);
+
+INSERT INTO
+	public.compostagens(quantidade_kg, publicado_por, posto_fk)
+VALUES
+	(0, '_default', 2);
+
+INSERT INTO
+	public.compostagens(quantidade_kg, publicado_por, posto_fk)
+VALUES
+	(0, '_default', 3);
+
+INSERT INTO
+	public.compostagens(quantidade_kg, publicado_por, posto_fk)
+VALUES
+	(0, '_default', 4);
