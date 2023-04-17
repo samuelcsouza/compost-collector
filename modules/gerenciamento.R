@@ -2,135 +2,184 @@ gerenciamento_ui <- function(id){
   ns <- NS(id)
   
   fluidRow(
-    
-    box(
-      title = 'Pontos de Coleta',
-      width = 12,
-      status = 'primary',
-      solidHeader = TRUE,
-      collapsible = TRUE,
-      collapsed = FALSE,
-      
-      fluidPage(
-        h4('Pontos de coletas já cadastrados'),
-        DT::dataTableOutput(ns('list_collection_points')) %>% withSpinner(type = 4, color = 'red'),
+    # Recolhimento
+    {
+      box(
+        title = 'Recolhimento',
+        width = 12,
+        status = 'primary',
+        solidHeader = TRUE,
+        collapsible = TRUE,
+        collapsed = FALSE,
         
-        br(),
-        
-        box(
-          title = 'Cadastrar novo Ponto de Coleta',
-          width = 12,
-          status = 'success',
-          solidHeader = TRUE,
-          collapsible = TRUE,
-          collapsed = TRUE,
+        fluidPage(
           
-          fluidPage(
-            textInput(
-              inputId = ns('point_address'),
-              label = 'Endereço',
-              width = '95%',
-              value = NULL
-            ) %>% column(width = 8),
+          h4('Quantidade de resíduos já coletados'),
+          DT::dataTableOutput(ns('list_collection_garbage')) %>% withSpinner(type = 4, color = 'red'),
+          
+          br(),
+          
+          div(
+            # align = 'center',
             
-            textInput(
-              inputId = ns('point_name'),
-              label = 'Nome do Ponto de Coleta',
-              width = '95%',
-              value = NULL
-            ) %>% column(width = 4),
-          ),
-          
-          footer = div(
-            align = 'center',
-            actionButton(
-              inputId = ns('new_point'),
-              label = 'Adicionar'
-            )
-          )
-          
-        ),
-        
-        br(),
-        
-        box(
-          title = 'Editar um ponto já existente',
-          width = 12,
-          status = 'warning',
-          solidHeader = TRUE,
-          collapsible = TRUE,
-          collapsed = TRUE,
-          
-          fluidPage(
-            textInput(
-              inputId = ns('edit_point_id'),
-              label = 'ID',
-              width = '95%',
-              value = NULL
+            column(width = 2),
+            
+            downloadButton(
+              outputId = ns('garbage_download'),
+              label = 'Download',
             ) %>% column(width = 2),
             
-            textInput(
-              inputId = ns('edit_point_address'),
-              label = 'Endereço',
-              width = '95%',
-              value = NULL
-            ) %>% column(width = 6),
+            actionButton(
+              inputId = ns('garbage_update'),
+              label = 'Atualizar Dados',
+              icon = icon('refresh')
+            )%>% column(width = 2),
             
-            textInput(
-              inputId = ns('edit_point_name'),
-              label = 'Nome do Ponto de Coleta',
-              width = '95%',
-              value = NULL
-            ) %>% column(width = 4)
-          ),
-          
-          footer = div(
-            align = 'center',
             actionButton(
-              inputId = ns('edit_point'),
-              label = 'Editar'
-            )
+              inputId = ns('garbage_delete'),
+              label = 'Limpar Dados',
+              icon = icon('broom')
+            )%>% column(width = 2),
+            
+            column(width = 4)
           )
-          
-        ),
-        
-        br(),
-        
-        box(
-          title = 'Excluir um ponto de coleta',
-          width = 12,
-          status = 'danger',
-          solidHeader = TRUE,
-          collapsible = TRUE,
-          collapsed = TRUE,
-          
-          
-          fluidPage(
-            numericInput(
-              inputId = ns('delete_point_id'),
-              label = 'ID',
-              width = '95%',
-              value = NULL
-            ) %>% column(width = 2)
-          ),
-          
-          footer = div(
-            align = 'center',
-            actionButton(
-              inputId = ns('delete_point'),
-              label = 'Excluir'
-            )
-          )
-          
         )
       )
-    )
+    },
+    
+    # Postos de Coleta
+    {
+      box(
+        title = 'Pontos de Coleta',
+        width = 12,
+        status = 'primary',
+        solidHeader = TRUE,
+        collapsible = TRUE,
+        collapsed = TRUE,
+        
+        fluidPage(
+          h4('Pontos de coletas já cadastrados'),
+          DT::dataTableOutput(ns('list_collection_points')) %>% withSpinner(type = 4, color = 'red'),
+          
+          br(),
+          
+          box(
+            title = 'Cadastrar novo Ponto de Coleta',
+            width = 12,
+            status = 'success',
+            solidHeader = TRUE,
+            collapsible = TRUE,
+            collapsed = TRUE,
+            
+            fluidPage(
+              textInput(
+                inputId = ns('point_address'),
+                label = 'Endereço',
+                width = '95%',
+                value = NULL
+              ) %>% column(width = 8),
+              
+              textInput(
+                inputId = ns('point_name'),
+                label = 'Nome do Ponto de Coleta',
+                width = '95%',
+                value = NULL
+              ) %>% column(width = 4),
+            ),
+            
+            footer = div(
+              align = 'center',
+              actionButton(
+                inputId = ns('new_point'),
+                label = 'Adicionar'
+              )
+            )
+            
+          ),
+          
+          br(),
+          
+          box(
+            title = 'Editar um ponto já existente',
+            width = 12,
+            status = 'warning',
+            solidHeader = TRUE,
+            collapsible = TRUE,
+            collapsed = TRUE,
+            
+            fluidPage(
+              textInput(
+                inputId = ns('edit_point_id'),
+                label = 'ID',
+                width = '95%',
+                value = NULL
+              ) %>% column(width = 2),
+              
+              textInput(
+                inputId = ns('edit_point_address'),
+                label = 'Endereço',
+                width = '95%',
+                value = NULL
+              ) %>% column(width = 6),
+              
+              textInput(
+                inputId = ns('edit_point_name'),
+                label = 'Nome do Ponto de Coleta',
+                width = '95%',
+                value = NULL
+              ) %>% column(width = 4)
+            ),
+            
+            footer = div(
+              align = 'center',
+              actionButton(
+                inputId = ns('edit_point'),
+                label = 'Editar'
+              )
+            )
+            
+          ),
+          
+          br(),
+          
+          box(
+            title = 'Excluir um ponto de coleta',
+            width = 12,
+            status = 'danger',
+            solidHeader = TRUE,
+            collapsible = TRUE,
+            collapsed = TRUE,
+            
+            
+            fluidPage(
+              numericInput(
+                inputId = ns('delete_point_id'),
+                label = 'ID',
+                width = '95%',
+                value = NULL
+              ) %>% column(width = 2)
+            ),
+            
+            footer = div(
+              align = 'center',
+              actionButton(
+                inputId = ns('delete_point'),
+                label = 'Excluir'
+              )
+            )
+            
+          )
+        )
+      )
+    }
     
   )
 }
 
 gerenciamento_server <- function(input, output, session){
   ns <- session$ns
+  
+  #### Postos de Coleta ####
   
   output$list_collection_points <- renderDataTable({
     
@@ -208,7 +257,7 @@ gerenciamento_server <- function(input, output, session){
     
     clear_text('point_address')
     clear_text('point_name')
-
+    
     showModal(
       modalDialog(
         title = 'Sucesso!',
@@ -221,7 +270,7 @@ gerenciamento_server <- function(input, output, session){
   
   # # # # Edit # # # #
   observeEvent(input$edit_point, {
-
+    
     id          <- shiny::isolate(input$edit_point_id)
     address     <- shiny::isolate(input$edit_point_address) %>% stringr::str_to_title()
     point_name  <- shiny::isolate(input$edit_point_name)
@@ -239,7 +288,7 @@ gerenciamento_server <- function(input, output, session){
         shiny::validate("")
       }
     )
-
+    
     query <- "
       UPDATE
         public.postos_coleta
@@ -252,7 +301,7 @@ gerenciamento_server <- function(input, output, session){
       WHERE
         public.postos_coleta.id_posto = ?id;
     "
-
+    
     query <- pool::sqlInterpolate(con,
                                   query,
                                   id = id,
@@ -260,13 +309,13 @@ gerenciamento_server <- function(input, output, session){
                                   name = point_name,
                                   lat = coords$lat[1],
                                   lng = coords$lon[1])
-
+    
     pool::dbGetQuery(con, query)
-
+    
     clear_text('edit_point_address')
     clear_text('edit_point_name')
     clear_text('edit_point_id')
-
+    
     showModal(
       modalDialog(
         title = 'Sucesso!',
@@ -274,7 +323,7 @@ gerenciamento_server <- function(input, output, session){
         p('Ponto de coleta alterado com sucesso!')
       )
     )
-
+    
   })
   
   # # # # Delete # # # #
@@ -306,5 +355,93 @@ gerenciamento_server <- function(input, output, session){
     )
     
   })
+  
+  
+  #### Resíduos ####
+  
+  # Table
+  output$list_collection_garbage <- renderDataTable({
+    
+    input$garbage_update
+      
+      query <- "
+      select 
+      	publicado_por as \"Nome\",
+      	 sum(quantidade_kg) as \"Quantidade Coletada (Kg)\"
+      from
+      	public.compostagens
+      where
+      	foi_recolhido = true
+      group by
+      	publicado_por;"
+      
+      dataset <- pool::dbGetQuery(con, query)
+      
+      datatable(
+        dataset,
+        rownames = FALSE,
+        options = list(searching = FALSE,
+                       paging = FALSE,
+                       info = FALSE,
+                       stripeClasses = FALSE,
+                       scrollX = TRUE,
+                       ordering = FALSE,
+                       scrollY = "250px",
+                       columnDefs = list(list(className = 'dt-center',
+                                              targets = "_all")))
+      )
+      
+    
+  })
+  
+  collection_garbage <- reactive({
+    
+    input$garbage_update
+    
+    query <- "
+      select 
+      	publicado_por as \"Nome\",
+      	 sum(quantidade_kg) as \"Quantidade Coletada (Kg)\"
+      from
+      	public.compostagens
+      where
+      	foi_recolhido = true
+      group by
+      	publicado_por;"
+    
+    dataset <- pool::dbGetQuery(con, query)
+    
+    dataset
+    
+  })
+  
+  observeEvent(input$garbage_delete, {
+    
+    query <- "DELETE FROM public.compostagens WHERE foi_recolhido = true"
+    
+    pool::dbGetQuery(con, query)
+    
+    shinyjs::click('garbage_update')
+    
+    showModal(
+      modalDialog(
+        title = 'Sucesso!',
+        size = 's',
+        p('Dados excluidos do banco de dados!')
+      )
+    )
+    
+  })
+  
+  output$garbage_download <- {
+    downloadHandler(
+      filename = function(){
+        fname <- paste0(Sys.Date(), '_download.xlsx')
+      },
+      content = function(fname){
+        writexl::write_xlsx(collection_garbage(), fname)
+      }
+    )
+  }
   
 }
