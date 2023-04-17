@@ -2,6 +2,7 @@ suppressMessages({
   library(shiny)
   library(shinydashboard)
   library(shinycssloaders)
+  library(shinyjs)
   library(dplyr)
   library(leaflet)
   library(leaflet.extras)
@@ -27,6 +28,8 @@ sapply(
 
 sidebar <- dashboardSidebar(
   
+  shinyjs::useShinyjs(),
+  
   sidebarMenu(
     
     menuItem(
@@ -45,6 +48,12 @@ sidebar <- dashboardSidebar(
       text    = "Mapa",
       tabName = "mapa",    
       icon    = icon("fas fa-map-marked-alt")
+    ),
+    
+    menuItem(
+      text    = "Gerenciamento",
+      tabName = "gerenciamento",    
+      icon    = icon('gears', verify_fa = FALSE)
     )
     
   )
@@ -55,7 +64,8 @@ body <- dashboardBody(
     
     tabItem(tabName = "home", inicio_ui('home')),
     tabItem(tabName = "mapa", map_ui('mapa')),
-    tabItem(tabName = "dados", data_ui('dados'))
+    tabItem(tabName = "dados", data_ui('dados')),
+    tabItem(tabName = 'gerenciamento', gerenciamento_ui('gerenciamento'))
     
   )
 )
@@ -73,6 +83,7 @@ server <- function(input, output, session) {
   
   callModule(map_server, 'mapa')
   callModule(data_server, 'dados')
+  callModule(gerenciamento_server, 'gerenciamento')
   
 }
 

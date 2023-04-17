@@ -20,7 +20,7 @@ gerenciamento_ui <- function(id){
         box(
           title = 'Cadastrar novo Ponto de Coleta',
           width = 12,
-          status = 'primary',
+          status = 'success',
           solidHeader = TRUE,
           collapsible = TRUE,
           collapsed = TRUE,
@@ -56,7 +56,7 @@ gerenciamento_ui <- function(id){
         box(
           title = 'Editar um ponto já existente',
           width = 12,
-          status = 'primary',
+          status = 'warning',
           solidHeader = TRUE,
           collapsible = TRUE,
           collapsed = TRUE,
@@ -99,7 +99,7 @@ gerenciamento_ui <- function(id){
         box(
           title = 'Excluir um ponto de coleta',
           width = 12,
-          status = 'primary',
+          status = 'danger',
           solidHeader = TRUE,
           collapsible = TRUE,
           collapsed = TRUE,
@@ -247,7 +247,8 @@ gerenciamento_server <- function(input, output, session){
         endereco_completo = ?address,
         latitude = ?lat,
         longitude = ?lng,
-        nome_posto = ?name
+        nome_posto = ?name,
+        atualizado_em = NOW()
       WHERE
         public.postos_coleta.id_posto = ?id;
     "
