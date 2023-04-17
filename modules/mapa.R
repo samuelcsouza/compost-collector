@@ -170,7 +170,8 @@ map_server <- function(input, output, session){
     where
       c.foi_recolhido = false
       AND c.publicado_por <> '_default'
-    	AND c.posto_fk = ?fk;
+    	AND c.posto_fk = ?fk
+    order by c.publicado_por asc;
     "
 
     all_compost_query <- pool::sqlInterpolate(con, all_compost_query, fk = id)
@@ -326,7 +327,7 @@ map_server <- function(input, output, session){
   
   observeEvent(input$add_new, {
     
-    publicado_por <- input$txt_name
+    publicado_por <- input$txt_name %>% tolower()
     quantidade    <- input$txt_qtd %>% as.numeric()
     last_id       <- readRDS('last_selected_id.rds') %>% as.numeric()
     
