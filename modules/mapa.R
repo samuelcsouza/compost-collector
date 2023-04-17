@@ -151,6 +151,11 @@ map_server <- function(input, output, session){
   observeEvent(input$main_map_marker_click, {
     
     id <- input$main_map_marker_click$id
+    
+    saveRDS(
+      object = id,
+      file = 'last_selected_id.rds'
+    )
 
     entity <- dataset() %>% dplyr::filter(id == !!id)
 
@@ -226,11 +231,21 @@ map_server <- function(input, output, session){
             
             br(), br(),
             
+            uiOutput(ns('ui_add_new')),
+            
             div(
               align = 'center',
-              actionButton(
-                inputId = ns('btn_remove'),
-                label = 'Recolher Selecionados'
+              
+              fluidRow(
+                actionButton(
+                  inputId = ns('btn_remove'),
+                  label = 'Recolher Selecionados'
+                ),
+                
+                actionButton(
+                  inputId = ns('btn_add'),
+                  label = 'Adicionar Novo'
+                )
               )
             )
             
@@ -263,6 +278,75 @@ map_server <- function(input, output, session){
     removeModal()
     
     shinyjs::click(id = 'update_map')
+    
+  })
+  
+  output$ui_add_new <- renderUI({
+    fluidPage()
+  })
+  
+  observeEvent(input$btn_add, {
+    
+    output$ui_add_new <- renderUI({
+      
+      fluidPage(
+        
+        column(
+          width = 4,
+          textInput(
+            inputId = ns('txt_name'),
+            label = 'Publicado Por'
+          )
+        ),
+        
+        column(
+          width = 4,
+          numericInput(
+            inputId = ns('txt_qtd'),
+            label = 'Quantidade (Kg)',
+            value = 0,
+            min = 0,
+            step = 0.1
+          )
+        ),
+        
+        column(
+          width = 4,
+          
+          actionButton(
+            inputId = ns('add_new'),
+            label = 'Adicionar'
+          )
+        )
+        
+      )
+    })
+    
+  })
+  
+  observeEvent(input$add_new, {
+    
+    publicado_por <- input$txt_name
+    quantidade    <- input$txt_qtd %>% as.numeric()
+    last_id       <- readRDS('last_selected_id.rds') %>% as.numeric()
+    
+    query <- "INSERT INTO public.compostagens(quantidade_kg, publicado_por, posto_fk) 
+      VALUES (?qtd, ?name, ?fk);"
+    
+    query <- pool::sqlInterpolate(con, query,
+                                  qtd = quantidade,
+                                  name = publicado_por,
+                                  fk = last_id)
+    
+    pool::dbGetQuery(con, query)
+    
+    shinyjs::click(id = 'update_map')
+    
+    output$ui_add_new <- renderUI({
+      fluidPage()
+    })
+    
+    removeModal()
     
   })
 }
