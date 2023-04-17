@@ -39,12 +39,6 @@ sidebar <- dashboardSidebar(
     ),
     
     menuItem(
-      text    = "Dashboard",
-      tabName = "dados",    
-      icon    = icon("chart-line")
-    ),
-    
-    menuItem(
       text    = "Mapa",
       tabName = "mapa",    
       icon    = icon("fas fa-map-marked-alt")
@@ -64,7 +58,6 @@ body <- dashboardBody(
     
     tabItem(tabName = "home", inicio_ui('home')),
     tabItem(tabName = "mapa", map_ui('mapa')),
-    tabItem(tabName = "dados", data_ui('dados')),
     tabItem(tabName = 'gerenciamento', gerenciamento_ui('gerenciamento'))
     
   )
@@ -82,7 +75,6 @@ ui <- dashboardPage(
 server <- function(input, output, session) {
   
   callModule(map_server, 'mapa')
-  callModule(data_server, 'dados')
   callModule(gerenciamento_server, 'gerenciamento')
   
 }
