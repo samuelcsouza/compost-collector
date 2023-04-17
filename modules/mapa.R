@@ -7,7 +7,18 @@ map_ui <- function(id){
       outputId = ns('main_map'),
       width = '100%',
       height = '90vh'
-    ) %>% withSpinner(type = 4, color = 'red')
+    ) %>% withSpinner(type = 4, color = 'red'),
+    
+    hr(),
+    
+    div(
+      align = 'center',
+      
+      actionButton(
+        inputId = ns('update_map'),
+        label = 'Atualizar Mapa'
+      )
+    )
     
   )
   
@@ -17,30 +28,35 @@ map_server <- function(input, output, session){
   
   ns <- session$ns
   
-  dataset <- data.frame(
-    lat = c(-23.05034156974224,
-            -23.01937860955801,
-            -23.23508040975259),
-    lng = c(-45.60461799853394,
-            -45.582645341792244,
-            -45.89840288397144),
-    name = c('Via Vale Garden Shopping',
-             'Taubaté Shopping',
-             'Shopping Jardim Oriente'),
-    address = c('Av. Dom Pedro I, 7181 - Res. Estoril, Taubaté - SP, 12091-000',
-                'Av. Charles Schnneider, 1700 - Vila Costa, Taubaté - SP, 12040-900',
-                'R. Andorra, 500 - Jardim America, São José dos Campos - SP, 12235-050')
-  )
-  
-  
-  
+  # # # # Render # # # #
   output$main_map <- renderLeaflet({
+    
+    query <- "
+      SELECT 
+      	pc.id_posto AS id,
+      	pc.nome_posto AS name,
+      	pc.endereco_completo AS address,
+      	pc.latitude AS lat,
+      	pc.longitude AS lng,
+      	SUM(c.quantidade_kg) AS qtd
+      FROM
+      	public.postos_coleta pc
+      LEFT JOIN
+        public.compostagens c
+      ON 
+        pc.id_posto = c.posto_fk 
+      GROUP BY 
+        id;"
+    
+    dataset <- pool::dbGetQuery(con, query) %>% 
+      dplyr::mutate(qtd = ifelse(is.na(qtd), 0, qtd))
+    
     
     leaflet() %>% 
       
       addTiles() %>%
       
-      setView(lng = -45.50709, lat = -23.05067, zoom = 11) %>% 
+      setView(lng = -45.89630216400873, lat = -23.19709799312104, zoom = 12) %>% 
       
       setMaxBounds(lng1 = 39.02344, 
                    lat1 = 28.92163, 
@@ -60,22 +76,118 @@ map_server <- function(input, output, session){
                                           shadowUrl = "www/assets/marker-shadow.png"),
                  label = ~ paste0('<b>', name, '</b>',
                                   '</br>', address,
+                                  '</br><b>Quantidade de Resíduos à recolher: </b>', qtd, ' kg',
                                   '</br></br><b>Clique para mais detalhes!</b>') %>% lapply(htmltools::HTML),
                  labelOptions = labelOptions(textsize = "14px"),
                  group = 'markers',
-                 layerId = ~ name,
+                 layerId = ~ id,
                  clusterOptions = leaflet::markerClusterOptions())
     
   })
   
   
+  # # # # Dataset # # # #
+  dataset <- reactive({
+    
+    input$update_map
+    
+    query <- "
+      SELECT 
+      	pc.id_posto AS id,
+      	pc.nome_posto AS name,
+      	pc.endereco_completo AS address,
+      	pc.latitude AS lat,
+      	pc.longitude AS lng,
+      	SUM(c.quantidade_kg) AS qtd
+      FROM
+      	public.postos_coleta pc
+      LEFT JOIN
+        public.compostagens c
+      ON 
+        pc.id_posto = c.posto_fk 
+      GROUP BY 
+        id;"
+    
+    dataset <- pool::dbGetQuery(con, query) %>% 
+      dplyr::mutate(qtd = ifelse(is.na(qtd), 0, qtd))
+    
+    dataset
+    
+  })
+  
+  
+  # # # # Threads # # # #
+  observe({
+    
+    leafletProxy('main_map') %>% 
+      
+      clearGroup('markers') %>% 
+      
+      addMarkers(data = dataset(),
+                 lat = ~ lat,
+                 lng = ~ lng,
+                 icon = leaflet::makeIcon(iconUrl = 'www/assets/recycle.svg',
+                                          iconWidth = 25,
+                                          iconHeight = 43,
+                                          iconAnchorX = 22, 
+                                          iconAnchorY = 38,
+                                          shadowUrl = "www/assets/marker-shadow.png"),
+                 label = ~ paste0('<b>', name, '</b>',
+                                  '</br>', address,
+                                  '</br><b>Quantidade de Resíduos à recolher: </b>', qtd, ' kg',
+                                  '</br></br><b>Clique para mais detalhes!</b>') %>% lapply(htmltools::HTML),
+                 labelOptions = labelOptions(textsize = "14px"),
+                 group = 'markers',
+                 layerId = ~ id,
+                 clusterOptions = leaflet::markerClusterOptions())
+    
+    
+  })
   
   observeEvent(input$main_map_marker_click, {
     
     id <- input$main_map_marker_click$id
-    
-    entity <- dataset %>% 
-      dplyr::filter(name == id)
+
+    entity <- dataset() %>% dplyr::filter(id == !!id)
+
+    all_compost_query <- "
+     select
+      c.id_compostagem AS id,
+    	c.quantidade_kg,
+    	c.publicado_em,
+    	c.publicado_por
+    from
+    	public.compostagens c
+    where
+    	c.posto_fk = ?fk;
+    "
+
+    all_compost_query <- pool::sqlInterpolate(con, all_compost_query, fk = id)
+
+    all_compost_dataset <<- pool::dbGetQuery(con, all_compost_query)
+
+    output$compost_table <- renderDT({
+      
+      shiny::validate(
+        shiny::need(nrow(all_compost_dataset) > 0, 
+                    'Não existe resíduos para coleta neste endereço.')
+      )
+
+      all_compost_dataset %>%
+
+        datatable(
+          rownames = FALSE,
+          options = list(searching = FALSE,
+                         paging = FALSE,
+                         info = FALSE,
+                         stripeClasses = FALSE,
+                         scrollX = TRUE,
+                         ordering = FALSE,
+                         scrollY = "250px")
+        )
+
+    })
+
     
     showModal(
       modalDialog(
@@ -104,13 +216,45 @@ map_server <- function(input, output, session){
             
             br(), br(),
             
-            htmltools::HTML('<b>Publicado em 14/03/2023</b>')
+            DT::dataTableOutput(ns('compost_table')),
+            
+            br(), br(),
+            
+            div(
+              align = 'center',
+              actionButton(
+                inputId = ns('btn_remove'),
+                label = 'Recolher Selecionados'
+              )
+            )
             
           )
         )
+        
+       
+        )
       )
-    )
     
   })
   
+  
+  # # # Delete Composts
+  observeEvent(input$btn_remove, {
+    
+    .rows <- input$compost_table_rows_selected %>% shiny::isolate()
+    
+    rows_to_delete <- all_compost_dataset[.rows, ]
+    
+    query <- "DELETE FROM public.compostagens c WHERE c.id_compostagem = ?delete_id"
+    
+    lapply(rows_to_delete$id, function(delete_id) {
+      delete_query <- pool::sqlInterpolate(con, query, delete_id = delete_id)
+      pool::dbGetQuery(con, delete_query)
+    })
+    
+    removeModal()
+    
+    shinyjs::click(id = 'update_map')
+    
+  })
 }
