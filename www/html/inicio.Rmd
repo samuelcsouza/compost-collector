@@ -1,6 +1,25 @@
 ---
-title: "Projeto Integrador I - Univesp"
+title: "Projeto Integrador I - Compost Collector"
 output: html_document
 ---
 
-Descrição do nosso projeto aqui!
+![](www/assets/organe-se-thumb.png)
+
+## Organe-se
+
+_A Organe-se é um projeto de compostagem urbana em São José dos Campos -SP_
+
+Nós ressignificamos o resíduo orgânico oferecendo os serviços de coleta, transporte e compostagem.
+
+Além do serviço de coleta em casa, que é feita por enquanto em alguns bairros, temos também a opção de Pontos de Coleta com locais de entrega nas zonas central, oeste e norte de São José dos Campos.
+
+Os clientes que fazem parte deste projeto recebem todo mês recompensas, como adubo, biofertilizante e/ou mudas, além de um relatório do seu impacto positivo ao meio ambiente.
+
+## Sobre o projeto
+
+Este projeto visa otimizar o gerenciamento dos pontos de coletas do projeto, onde através de uma aplicação web (_Dashboard_) é possível acompanhar a quantidade de resíduos em cada ponto e contabilizar por pessoa o número exato de resíduos recolhidos ao final de um ciclo.
+
+O usuário final da aplicação é uma pessoa que trabalha diretamente para a ong, onde ela será a responsável pelo gerenciamento dos pontos de coleta. A princípio, a aplicação não estará disponível para os clientes.
+
+Na aplicação, é possível realizar as operações de _CRUD (Create, Read, Update, Delete)_ com os resíduos publicados pelos clientes, ou seja, é possível criar, editar, listar e deletar as entidades no banco de dados. Para este projeto, foi considerado como entidade no banco de dados os _resíduos_ e _pontos de coleta_.
+
