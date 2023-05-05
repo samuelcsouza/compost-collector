@@ -13,15 +13,15 @@ CREATE TABLE IF NOT EXISTS public.postos_coleta(
 	longitude FLOAT
 );
 
-CREATE TABLE IF NOT EXISTS public.compostagens(
-	id_compostagem SERIAL NOT NULL PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS public.residuos(
+	id_residuo SERIAL NOT NULL PRIMARY KEY,
 	quantidade_kg FLOAT,
 	publicado_em TIMESTAMP(0) NOT NULL DEFAULT NOW(),
 	publicado_por VARCHAR(255),
 	recolhido_em TIMESTAMP(0),
 	foi_recolhido boolean DEFAULT FALSE,
 	posto_fk INT NOT NULL,
-	CONSTRAINT compostagem_fk FOREIGN KEY (posto_fk) REFERENCES public.postos_coleta(id_posto) ON DELETE CASCADE
+	CONSTRAINT residuo_fk FOREIGN KEY (posto_fk) REFERENCES public.postos_coleta(id_posto) ON DELETE CASCADE
 );
 
 -- Postos de coleta previamente cadastrados
@@ -60,21 +60,21 @@ VALUES
 
 -- Valores default para não bugar o mapa
 INSERT INTO
-	public.compostagens(quantidade_kg, publicado_por, posto_fk)
+	public.residuos(quantidade_kg, publicado_por, posto_fk)
 VALUES
 	(0, '_default', 1);
 
 INSERT INTO
-	public.compostagens(quantidade_kg, publicado_por, posto_fk)
+	public.residuos(quantidade_kg, publicado_por, posto_fk)
 VALUES
 	(0, '_default', 2);
 
 INSERT INTO
-	public.compostagens(quantidade_kg, publicado_por, posto_fk)
+	public.residuos(quantidade_kg, publicado_por, posto_fk)
 VALUES
 	(0, '_default', 3);
 
 INSERT INTO
-	public.compostagens(quantidade_kg, publicado_por, posto_fk)
+	public.residuos(quantidade_kg, publicado_por, posto_fk)
 VALUES
 	(0, '_default', 4);
