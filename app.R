@@ -65,8 +65,8 @@ body <- dashboardBody(
 
 ui <- dashboardPage(
   title = "PI - UNIVESP",
-  dashboardHeader(title = tags$a(tags$img(src = '/assets/univesp.png', 
-                                          width = "75%", style = "margin-bottom: 10px;"))), 
+  dashboardHeader(title = tags$a(tags$img(src = 'https://lh4.googleusercontent.com/dZUO6fz4YHh3TD4DzAy-vqNw46KdnnXny5RriKj4LKn6C_rXdJwFl2PRgYJriZhIn7HWst4SCnIU6mAmo9ep7GdZd_f022xo3o_ewwcei94acA1lBbXNH00aG_GcmoIwlQ=w8188', 
+                                          width = "95%", style = "margin-bottom: 10px;"))), 
   sidebar, 
   body,
   skin = 'black'
