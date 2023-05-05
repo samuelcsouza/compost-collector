@@ -366,7 +366,7 @@ gerenciamento_server <- function(input, output, session){
       	publicado_por as \"Nome\",
       	 sum(quantidade_kg) as \"Quantidade Coletada (Kg)\"
       from
-      	public.compostagens
+      	public.residuos
       where
       	foi_recolhido = true
       	AND publicado_por <> '_default'
@@ -401,7 +401,7 @@ gerenciamento_server <- function(input, output, session){
       	publicado_por as \"Nome\",
       	 sum(quantidade_kg) as \"Quantidade Coletada (Kg)\"
       from
-      	public.compostagens
+      	public.residuos
       where
       	foi_recolhido = true
       	AND publicado_por <> '_default'
@@ -416,7 +416,7 @@ gerenciamento_server <- function(input, output, session){
   
   observeEvent(input$garbage_delete, {
     
-    query <- "DELETE FROM public.compostagens WHERE foi_recolhido = true"
+    query <- "DELETE FROM public.residuos WHERE foi_recolhido = true"
     
     pool::dbGetQuery(con, query)
     
