@@ -42,7 +42,7 @@ map_server <- function(input, output, session){
       FROM
       	public.postos_coleta pc
       LEFT JOIN
-        public.compostagens c
+        public.residuos c
       ON 
         pc.id_posto = c.posto_fk 
       WHERE
@@ -104,7 +104,7 @@ map_server <- function(input, output, session){
       FROM
       	public.postos_coleta pc
       LEFT JOIN
-        public.compostagens c
+        public.residuos c
       ON 
         pc.id_posto = c.posto_fk
       WHERE 
@@ -161,12 +161,12 @@ map_server <- function(input, output, session){
 
     all_compost_query <- "
      select
-      c.id_compostagem AS id,
+      c.id_residuo AS id,
     	c.quantidade_kg,
     	c.publicado_em,
     	c.publicado_por
     from
-    	public.compostagens c
+    	public.residuos c
     where
       c.foi_recolhido = false
       AND c.publicado_por <> '_default'
@@ -267,9 +267,9 @@ map_server <- function(input, output, session){
     
     rows_to_update <- all_compost_dataset[.rows, ]
     
-    query <- "UPDATE public.compostagens 
+    query <- "UPDATE public.residuos 
       SET foi_recolhido = true, recolhido_em = NOW()
-      WHERE id_compostagem = ?id;"
+      WHERE id_residuo = ?id;"
     
     lapply(rows_to_update$id, function(id) {
       update_query <- pool::sqlInterpolate(con, query, id = id)
@@ -331,7 +331,7 @@ map_server <- function(input, output, session){
     quantidade    <- input$txt_qtd %>% as.numeric()
     last_id       <- readRDS('last_selected_id.rds') %>% as.numeric()
     
-    query <- "INSERT INTO public.compostagens(quantidade_kg, publicado_por, posto_fk) 
+    query <- "INSERT INTO public.residuos(quantidade_kg, publicado_por, posto_fk) 
       VALUES (?qtd, ?name, ?fk);"
     
     query <- pool::sqlInterpolate(con, query,

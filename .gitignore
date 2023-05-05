@@ -41,6 +41,7 @@ vignettes/*.pdf
 
 # Homepage files
 inicio.md
+www/html/inicio.html
 
 # Datasets
 last_selected_id.rds
