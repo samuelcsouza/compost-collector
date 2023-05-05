@@ -6,10 +6,12 @@ RUN apt-get update          \
     libpng-dev libgdal-dev  libgeos-dev libproj-dev libudunits2-dev \
     libssl-dev libcurl4-openssl-dev libssh2-1-dev libpq-dev zlib1g-dev
 
-RUN R -e "install.packages( c('shiny',      \
-    'shinydashboard', 'shinycssloaders',    \
-    'dplyr', 'leaflet', 'leaflet.extras',   \
-    'htmltools', 'DT', 'plotly'), repos='https://cloud.r-project.org/')"
+RUN R -e "install.packages(                         \
+  c('shiny', 'shinydashboard', 'shinycssloaders',   \
+  'shinyjs', 'dplyr', 'leaflet', 'leaflet.extras',  \
+  'htmltools', 'DT', 'plotly', 'stringr', 'pool',   \
+  'RPostgreSQL', 'nominatimlite'),                  \
+  repos='https://cloud.r-project.org/')"
 
 ARG ARG_GIS_USER
 ENV GIS_USER=$ARG_GIS_USER
