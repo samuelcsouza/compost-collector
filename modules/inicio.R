@@ -14,7 +14,7 @@ inicio_ui <- function(id){
   tagList(
     tags$iframe(
       src = "html/inicio.html",
-      width = '100%', height = "1600px",
+      width = '100%', height = "800px",
       frameborder = 0, scrolling = "no"
     )
   )
